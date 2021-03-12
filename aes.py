@@ -23,7 +23,8 @@ class AES:
         for round_no in range(1,11):
             round_output = self.perform_encryption_round(round_output, round_no)
 
-        print(f'----------Cyphertext---------:\n{Utils.convert_int_state_matrix_to_hex_matrix(round_output)}')
+        ciphertext = Utils.convert_2d_column_major_state_matrix_to_1d_arr(round_output)
+        print(f'----------Cyphertext---------:\n{Utils.convert_int_array_to_hex_array(ciphertext)}')
 
     # round 1 - 9
     def perform_encryption_round(self, prev_round_state_matrix: List[List[int]], round_no: int) -> List[List[int]]:

@@ -46,6 +46,17 @@ class Utils:
         return state_matrix
 
     @staticmethod
+    def convert_2d_column_major_state_matrix_to_1d_arr(matrix: List[List[int]]) -> List[int]:
+        assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
+        int_arr = []
+
+        for i in range(4):
+            for j in range(4):
+                int_arr.append(matrix[j][i])
+
+        return int_arr
+
+    @staticmethod
     def xor_operation_on_state_matrix(matrix1, matrix2):
         assert len(matrix1) == 4 and len(matrix2) == 4 and len(matrix1[0]) == 4 and len(matrix2[0]) == 4\
             , "Matrix used has invalid size"

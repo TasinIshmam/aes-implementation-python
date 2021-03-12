@@ -11,6 +11,10 @@ class Utils:
         return [ hex(value) for idx,value in enumerate(int_array)]
 
     @staticmethod
+    def convert_int_array_to_bitvector_array(int_array: List[int]) -> List[BitVector]:
+        return [BitVector(intVal=value, size=8) for idx, value in enumerate(int_array)]
+
+    @staticmethod
     def xor_operation_on_int_array(op1, op2):
         if len(op1) != len(op2):
             raise Exception("Array sizes do not match for bitwise operation")
@@ -33,7 +37,7 @@ class Utils:
     @staticmethod
     def convert_1d_arr_to_2d_column_major_state_matrix(int_arr):
         assert len(int_arr) == 16, "Input must be of length 16"
-        state_matrix = zeros = [[0] * 4 for _ in range(4)]
+        state_matrix = [[0] * 4 for _ in range(4)]
         idx = 0
         for i in range(4):
             for j in range(4):
@@ -53,13 +57,22 @@ class Utils:
         return updated_matrix
 
     @staticmethod
-    def convert_int_state_matrix_to_hex(matrix):
+    def convert_int_state_matrix_to_hex(matrix: List[List[int]]) -> List[List[str]]:
         assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
 
         hex_matrix = [[] for i in range(4)]
         for i in range(4):
             hex_matrix[i] = Utils.convert_int_array_to_hex_array(matrix[i])
         return hex_matrix
+
+    @staticmethod
+    def convert_int_state_matrix_to_bitvector(matrix: List[List[int]]) -> List[List[BitVector]]:
+        assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
+
+        bitvector_matrix = [[] for i in range(4)]
+        for i in range(4):
+            bitvector_matrix[i] = Utils.convert_int_array_to_bitvector_array(matrix[i])
+        return bitvector_matrix
 
     @staticmethod
     def byte_substitution_sbox_for_matrix(matrix):
@@ -89,3 +102,22 @@ class Utils:
                                                                                          state_matrix[3][1], \
                                                                                          state_matrix[3][2]
         return state_matrix
+
+    # TODO: Consider making this operation more generic (axb) and (bxc) size matrix multiply
+    @staticmethod
+    def matrix_multiply_for_bitvectors(mat1: List[List[BitVector]], mat2: List[List[BitVector]])-> List[List[int]]:
+        aes_modulus = BitVector(bitstring='100011011')
+        output_matrix_row = len(mat1)
+        output_matrix_col = len(mat2[0])
+        result = [[BitVector(intVal=0, size=8)] * output_matrix_row for _ in range(output_matrix_col)]
+
+        for i in range (output_matrix_row):
+            for j in range (output_matrix_col):
+                for k in range(len(mat2)):
+                    result[i][j] ^= mat1[i][k].gf_multiply_modular(mat2[k][j], aes_modulus, 8)
+
+        for i in range(output_matrix_row):
+            for j in range(output_matrix_col):
+                result[i][j] = result[i][j].intValue()
+
+        return result

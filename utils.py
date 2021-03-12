@@ -57,7 +57,7 @@ class Utils:
         return updated_matrix
 
     @staticmethod
-    def convert_int_state_matrix_to_hex(matrix: List[List[int]]) -> List[List[str]]:
+    def convert_int_state_matrix_to_hex_matrix(matrix: List[List[int]]) -> List[List[str]]:
         assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
 
         hex_matrix = [[] for i in range(4)]
@@ -66,7 +66,7 @@ class Utils:
         return hex_matrix
 
     @staticmethod
-    def convert_int_state_matrix_to_bitvector(matrix: List[List[int]]) -> List[List[BitVector]]:
+    def convert_int_state_matrix_to_bitvector_matrix(matrix: List[List[int]]) -> List[List[BitVector]]:
         assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
 
         bitvector_matrix = [[] for i in range(4)]

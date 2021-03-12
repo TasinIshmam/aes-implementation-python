@@ -22,7 +22,7 @@ class Key:
 
     # Returns an int array of ASCII values of a specific round's key
     def get_round_key(self, round_no : int) -> List[int]:
-        if not (1 <= round_no <= Key.NO_OF_ROUNDS):
+        if not (0 <= round_no <= Key.NO_OF_ROUNDS):
             raise Exception("Invalid round number specified")
         return self.expanded_key_int_array[round_no]
 
@@ -64,8 +64,6 @@ class Key:
     def circular_byte_left_shift(root_word_int_array: List[int]) -> List[int]:
         return [root_word_int_array[1], root_word_int_array[2], root_word_int_array[3], root_word_int_array[0]]
 
-
-
     @staticmethod
     def generate_key_from_string(key_string: str) -> List[int]:
         size_adjusted_string = key_string
@@ -81,4 +79,4 @@ class Key:
 
 # print(BitVector(intVal=0x34, size=8).get_bitvector_in_hex())
 
-Key("Thats my Kung Fu")
+# Key("Thats my Kung Fu")

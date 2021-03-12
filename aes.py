@@ -7,12 +7,25 @@ from key import Key
 class AES:
 
     def __init__(self, input_string: str, key : Key):
-        assert len(input_string) == 16, "Input to be encrypted must be 16 characters"
-        self.input_string = input_string
-        self.ascii_input_arr = AES.generate_ascii_int_array_from_string(self.input_string)
         self.expanded_key = key
+
+    def encrypt(self, input_string: str) -> str:
         # 0th round
-        self.first_round_state_int_arr = Utils.xor_operation_on_int_array(self.ascii_input_arr,self.expanded_key.get_round_key(0))
+        assert len(input_string) == 16, "Input to be encrypted must be 16 characters"
+        ascii_input_arr = AES.generate_ascii_int_array_from_string(input_string)
+        zeroth_round_int_array = Utils.xor_operation_on_int_array(ascii_input_arr,
+                                                                  self.expanded_key.get_round_key(0))
+        zeroth_round_state_matrix = Utils.convert_1d_arr_to_2d_column_major_state_matrix(zeroth_round_int_array)
+        # print(f'Round 1 Input matrix: {Utils.convert_int_state_matrix_to_hex(zeroth_round_state_matrix)}')
+
+    # round 1 - 9
+    def perform_generic_round(self, prev_round_state_matrix : List[List[int]]) -> List[List[int]]:
+        substitute_state_matrix = Utils.byte_substitution_sbox_for_matrix(prev_round_state_matrix)
+        # print(f'Round 1 sbox substituted matrix: {Utils.convert_int_state_matrix_to_hex(substitute_state_matrix)}')
+        left_shift_state_matrix = Utils.shift_left_row_state_matrix(substitute_state_matrix)
+        # print(f'Round 1 left shifted matrix: {Utils.convert_int_state_matrix_to_hex(left_shift_state_matrix)}')
+
+
 
 
 
@@ -31,6 +44,4 @@ class AES:
         return ascii_array
 
 
-
-
-
+AES("Two One Nine Two",Key("Thats my Kung Fu"))

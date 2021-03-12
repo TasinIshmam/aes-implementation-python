@@ -1,11 +1,12 @@
 
 from BitVector import BitVector
+from constants import Constants
 
 class Utils:
 
     @staticmethod
-    def print_int_array_in_hex(int_array):
-        print([ hex(value) for idx,value in enumerate(int_array)])
+    def convert_int_array_to_hex_array(int_array):
+        return [ hex(value) for idx,value in enumerate(int_array)]
 
     @staticmethod
     def xor_operation_on_int_array(op1, op2):
@@ -16,4 +17,12 @@ class Utils:
 
         # print([item.intValue() for item in xored_bitvector_array])
         return [item.intValue() for item in xored_bitvector_array]
+
+    @staticmethod
+    def byte_substitution_sbox(int_array):
+        substituted_array = []
+        for x in range(len(int_array)):
+            substituted_int = Constants.sbox[int_array[x]]
+            substituted_array.append(substituted_int)
+        return substituted_array
 

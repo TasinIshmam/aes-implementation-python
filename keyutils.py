@@ -1,7 +1,9 @@
 
-from BitVector import *
+from BitVector import BitVector
 from constants import Constants
+from utils import Utils
 import copy
+
 
 class Key:
 
@@ -12,8 +14,21 @@ class Key:
         self.key_int_array = Key.generate_key_from_string(key_string)  # Array of ints. Eg - [75, 22..]
         self.expanded_key_int_array = [[self.key_int_array]]  # array of arrays.
 
-        root_word = self.key_int_array[12:16]
-        Key.g_function_on_root_word(root_word, 1)
+        Key.generate_new_round_key(self.key_int_array, 1)
+
+    @staticmethod
+    def generate_new_round_key(prev_round_key_int_array, round_no):
+        prev_round_root_word = prev_round_key_int_array[12:16]
+        updated_root_word = Key.g_function_on_root_word(prev_round_root_word, round_no)
+
+        # generate each word of the new round key
+        first_word = Utils.xor_operation_on_int_array(updated_root_word, prev_round_key_int_array[0:4])
+        second_word = Utils.xor_operation_on_int_array(first_word, prev_round_key_int_array[4:8])
+        third_word = Utils.xor_operation_on_int_array(second_word, prev_round_key_int_array[8:12])
+        fourth_word = Utils.xor_operation_on_int_array(third_word, prev_round_key_int_array[12:16])
+
+        new_round_key = first_word + second_word + third_word + fourth_word
+        return new_round_key
 
     @staticmethod
     def g_function_on_root_word(root_word, round_no):
@@ -30,15 +45,10 @@ class Key:
         root_word_significant_byte_bitvector = BitVector(intVal=byte_substituted_root_word[0], size=8)
         updated_root_word_significant_byte_bitvector = root_word_significant_byte_bitvector.__xor__(round_constant_bitvector)
 
+        # only most significant byte changes for round constant addition.
         byte_substituted_root_word[0] = updated_root_word_significant_byte_bitvector.intValue()
 
         return byte_substituted_root_word
-
-
-
-
-
-
 
     @staticmethod
     def circular_byte_left_shift(root_word_int_array):

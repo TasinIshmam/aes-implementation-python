@@ -27,8 +27,54 @@ class AES:
         ciphertext_string = ''.join(chr(i) for i in ciphertext)
         print(f'----------Cyphertext---------:\nHex: {Utils.convert_int_array_to_hex_array(ciphertext)}')
         print(f'String: {ciphertext_string}')
+        return ciphertext_string
+
+    def decrypt(self, input_string: str) -> str:
+        assert len(input_string) == 16, "Input to be decrypted must be 16 characters"
+        ascii_input_arr = AES.generate_ascii_int_array_from_string(input_string)
+        zeroth_round_int_array = Utils.xor_operation_on_int_array(ascii_input_arr,
+                                                                  self.expanded_key.get_round_key(10))
+        zeroth_round_state_matrix = Utils.convert_1d_arr_to_2d_column_major_state_matrix(zeroth_round_int_array)
+        print(f'Decryption Round 1 Input matrix: {Utils.convert_int_state_matrix_to_hex_matrix(zeroth_round_state_matrix)}')
+
+        round_output = zeroth_round_state_matrix
+        for round_no in range(1,11):
+            round_output = self.perform_decryption_round(round_output, round_no)
+
+        plaintext = Utils.convert_2d_column_major_state_matrix_to_1d_arr(round_output)
+        plaintext_string = ''.join(chr(i) for i in plaintext)
+        print(f'----------Plaintext---------:\nHex: {Utils.convert_int_array_to_hex_array(plaintext)}')
+        print(f'String: {plaintext_string}')
+        return plaintext_string
 
     # round 1 - 9
+    def perform_decryption_round(self, prev_round_state_matrix: List[List[int]], round_no: int) -> List[List[int]]:
+        assert 1 <= round_no <= 10, "Invalid round_no for generic round"
+
+        # perform inverse shift row
+        right_shift_state_matrix = Utils.shift_right_row_state_matrix(prev_round_state_matrix)
+        print(f'Decryption Round {round_no} right shifted matrix: {Utils.convert_int_state_matrix_to_hex_matrix(right_shift_state_matrix)}')
+
+        # perform inverse substitution bytes
+        substitute_state_matrix = Utils.byte_substitution_inverse_sbox_for_matrix(right_shift_state_matrix)
+        print(f'Decryption Round {round_no} inverse sbox substituted matrix: {Utils.convert_int_state_matrix_to_hex_matrix(substitute_state_matrix)}')
+
+        # add round key
+        round_key_matrix = Utils.convert_1d_arr_to_2d_column_major_state_matrix(self.expanded_key.get_round_key(10 - round_no))
+        round_key_added_state_matrix = Utils.xor_operation_on_state_matrix(substitute_state_matrix, round_key_matrix)
+        print(f'Decryption Round {round_no} round key added matrix: {Utils.convert_int_state_matrix_to_hex_matrix(round_key_added_state_matrix)}')
+
+        if 1 <= round_no <= 9:
+            # perform inverse mix column
+            mix_col_state_matrix = Utils.matrix_multiply_for_bitvectors(Constants.inv_mixer,Utils.convert_int_state_matrix_to_bitvector_matrix(round_key_added_state_matrix))
+            print(
+                f'Decryption Round {round_no} inverse column mixed matrix: {Utils.convert_int_state_matrix_to_hex_matrix(mix_col_state_matrix)}')
+        elif round_no == 10:
+            print("Skipping column mixing for final round")
+            mix_col_state_matrix = round_key_added_state_matrix  # skip for round 10
+
+        return mix_col_state_matrix
+
     def perform_encryption_round(self, prev_round_state_matrix: List[List[int]], round_no: int) -> List[List[int]]:
         assert 1 <= round_no <= 10, "Invalid round_no for generic round"
 
@@ -67,5 +113,6 @@ class AES:
         return ascii_array
 
 
-AES(Key("Thats my Kung Fu")).encrypt("Two One Nine Two")
-
+aes = AES(Key("Thats my Kung Fu"))
+cyphertext = aes.encrypt("Two One Nine bla")
+plaintext = aes.decrypt(";¼'ùuå-2¢)&z?Ö")

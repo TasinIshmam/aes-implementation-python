@@ -1,4 +1,3 @@
-
 from BitVector import BitVector
 from constants import Constants
 from typing import *
@@ -8,7 +7,7 @@ class Utils:
 
     @staticmethod
     def convert_int_array_to_hex_array(int_array):
-        return [ hex(value) for idx,value in enumerate(int_array)]
+        return [hex(value) for idx, value in enumerate(int_array)]
 
     @staticmethod
     def convert_int_array_to_bitvector_array(int_array: List[int]) -> List[BitVector]:
@@ -20,7 +19,7 @@ class Utils:
             raise Exception("Array sizes do not match for bitwise operation")
 
         xored_bitvector_array = \
-            [BitVector(intVal=op1[x],size=8).__xor__(BitVector(intVal=op2[x],size=8)) for x in range(len(op1))]
+            [BitVector(intVal=op1[x], size=8).__xor__(BitVector(intVal=op2[x], size=8)) for x in range(len(op1))]
 
         # print([item.intValue() for item in xored_bitvector_array])
         return [item.intValue() for item in xored_bitvector_array]
@@ -66,7 +65,7 @@ class Utils:
 
     @staticmethod
     def xor_operation_on_state_matrix(matrix1, matrix2):
-        assert len(matrix1) == 4 and len(matrix2) == 4 and len(matrix1[0]) == 4 and len(matrix2[0]) == 4\
+        assert len(matrix1) == 4 and len(matrix2) == 4 and len(matrix1[0]) == 4 and len(matrix2[0]) == 4 \
             , "Matrix used has invalid size"
 
         updated_matrix = [[] for i in range(4)]
@@ -152,14 +151,14 @@ class Utils:
         return state_matrix
 
     @staticmethod
-    def matrix_multiply_for_bitvectors(mat1: List[List[BitVector]], mat2: List[List[BitVector]])-> List[List[int]]:
+    def matrix_multiply_for_bitvectors(mat1: List[List[BitVector]], mat2: List[List[BitVector]]) -> List[List[int]]:
         aes_modulus = BitVector(bitstring='100011011')
         output_matrix_row = len(mat1)
         output_matrix_col = len(mat2[0])
         result = [[BitVector(intVal=0, size=8)] * output_matrix_row for _ in range(output_matrix_col)]
 
-        for i in range (output_matrix_row):
-            for j in range (output_matrix_col):
+        for i in range(output_matrix_row):
+            for j in range(output_matrix_col):
                 for k in range(len(mat2)):
                     result[i][j] ^= mat1[i][k].gf_multiply_modular(mat2[k][j], aes_modulus, 8)
 

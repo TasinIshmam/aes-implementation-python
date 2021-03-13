@@ -3,6 +3,7 @@ from constants import Constants
 from utils import Utils
 from typing import *
 import copy
+import logging
 
 
 class Key:
@@ -15,7 +16,7 @@ class Key:
 
         for round_no in range(1, Key.NO_OF_ROUNDS + 1):
             new_round_key = Key.generate_new_round_key(self.expanded_key_int_array[round_no - 1], round_no)
-            print(f'Key for Round: {round_no} in Hex is: {Utils.convert_int_array_to_hex_array(new_round_key)}')
+            logging.debug(f'Key for Round: {round_no} in Hex is: {Utils.convert_int_array_to_hex_array(new_round_key)}')
             self.expanded_key_int_array.append(new_round_key)
 
     # Returns an int array of ASCII values of a specific round's key
@@ -72,9 +73,7 @@ class Key:
             size_adjusted_string = key_string.ljust(16, '\0')  # pad string to the right with 0's
 
         key = [ord(size_adjusted_string[x]) for x in range(16)]
-        print(f'Original Key: {size_adjusted_string}\nKey in Int: {key}')
+        logging.debug(f'Original Key: {size_adjusted_string}\nKey in Int: {key}')
         return key
 
-# print(BitVector(intVal=0x34, size=8).get_bitvector_in_hex())
 
-# Key("Thats my Kung Fu")

@@ -1,6 +1,7 @@
 from BitVector import BitVector
 from constants import Constants
 from typing import *
+import logging
 
 
 class Utils:
@@ -21,7 +22,7 @@ class Utils:
         xored_bitvector_array = \
             [BitVector(intVal=op1[x], size=8).__xor__(BitVector(intVal=op2[x], size=8)) for x in range(len(op1))]
 
-        # print([item.intValue() for item in xored_bitvector_array])
+        # logging.debug([item.intValue() for item in xored_bitvector_array])
         return [item.intValue() for item in xored_bitvector_array]
 
     @staticmethod

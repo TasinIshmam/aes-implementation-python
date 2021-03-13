@@ -48,7 +48,7 @@ class Key:
         # circular byte left shift
         shifted_root_word = Key.circular_byte_left_shift(root_word)
         # byte substitution
-        byte_substituted_root_word = Utils.byte_substitution_sbox(shifted_root_word)
+        byte_substituted_root_word = Utils.byte_substitution_sbox_for_array(shifted_root_word)
         # adding round constant
         round_constant_int = Constants.round_constants[round_no]
         round_constant_bitvector = BitVector(intVal=round_constant_int, size=8)

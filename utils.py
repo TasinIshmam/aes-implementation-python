@@ -26,10 +26,18 @@ class Utils:
         return [item.intValue() for item in xored_bitvector_array]
 
     @staticmethod
-    def byte_substitution_sbox(int_array):
+    def byte_substitution_sbox_for_array(int_array):
         substituted_array = []
         for x in range(len(int_array)):
             substituted_int = Constants.sbox[int_array[x]]
+            substituted_array.append(substituted_int)
+        return substituted_array
+
+    @staticmethod
+    def byte_substitution_inverse_sbox_for_array(int_array):
+        substituted_array = []
+        for x in range(len(int_array)):
+            substituted_int = Constants.inv_sbox[int_array[x]]
             substituted_array.append(substituted_int)
         return substituted_array
 
@@ -91,7 +99,16 @@ class Utils:
 
         substitute_matrix = [[] for i in range(4)]
         for i in range(4):
-            substitute_matrix[i] = Utils.byte_substitution_sbox(matrix[i])
+            substitute_matrix[i] = Utils.byte_substitution_sbox_for_array(matrix[i])
+        return substitute_matrix
+
+    @staticmethod
+    def byte_substitution_inverse_sbox_for_matrix(matrix):
+        assert len(matrix) == 4 and len(matrix[0]) == 4, "Matrix used has invalid size"
+
+        substitute_matrix = [[] for i in range(4)]
+        for i in range(4):
+            substitute_matrix[i] = Utils.byte_substitution_inverse_sbox_for_array(matrix[i])
         return substitute_matrix
 
     @staticmethod
@@ -114,7 +131,26 @@ class Utils:
                                                                                          state_matrix[3][2]
         return state_matrix
 
-    # TODO: Consider making this operation more generic (axb) and (bxc) size matrix multiply
+    @staticmethod
+    def shift_right_row_state_matrix(state_matrix: List[List[int]]) -> List[List[int]]:
+        assert len(state_matrix) == 4 and len(state_matrix[0]) == 4, "Matrix used has invalid size"
+
+        state_matrix[1][0], state_matrix[1][1], state_matrix[1][2], state_matrix[1][3] = state_matrix[1][3], \
+                                                                                         state_matrix[1][0], \
+                                                                                         state_matrix[1][1], \
+                                                                                         state_matrix[1][2]
+
+        state_matrix[2][0], state_matrix[2][1], state_matrix[2][2], state_matrix[2][3] = state_matrix[2][2], \
+                                                                                         state_matrix[2][3], \
+                                                                                         state_matrix[2][0], \
+                                                                                         state_matrix[2][1]
+
+        state_matrix[3][0], state_matrix[3][1], state_matrix[3][2], state_matrix[3][3] = state_matrix[3][1], \
+                                                                                         state_matrix[3][2], \
+                                                                                         state_matrix[3][3], \
+                                                                                         state_matrix[3][0]
+        return state_matrix
+
     @staticmethod
     def matrix_multiply_for_bitvectors(mat1: List[List[BitVector]], mat2: List[List[BitVector]])-> List[List[int]]:
         aes_modulus = BitVector(bitstring='100011011')
